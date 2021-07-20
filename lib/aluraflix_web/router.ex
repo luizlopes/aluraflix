@@ -7,6 +7,8 @@ defmodule AluraflixWeb.Router do
 
   scope "/api", AluraflixWeb do
     pipe_through :api
+
+    get "/videos", VideosController, :index
   end
 
   # Enables LiveDashboard only for development
