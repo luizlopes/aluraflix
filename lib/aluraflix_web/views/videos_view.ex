@@ -6,6 +6,6 @@ defmodule AluraflixWeb.VideosView do
   end
 
   def render("video.json", %{video: video}) do
-    %{title: video.title, description: video.description, url: video.url}
+    %{id: video.id, title: video.title, description: video.description, url: video.url}
   end
 end

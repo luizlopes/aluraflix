@@ -28,6 +28,7 @@ defmodule AluraflixWeb.VideosControllerTest do
       assert %{
                "data" => [
                  %{
+                   "id" => _id,
                    "description" => "video 1...",
                    "title" => "video #01",
                    "url" => "http://yt/video/1"
