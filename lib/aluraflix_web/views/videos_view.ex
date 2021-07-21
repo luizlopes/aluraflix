@@ -5,6 +5,10 @@ defmodule AluraflixWeb.VideosView do
     %{data: render_many(videos, AluraflixWeb.VideosView, "video.json", as: :video)}
   end
 
+  def render("show.json", %{video: video}) do
+    %{data: render(AluraflixWeb.VideosView, "video.json", video: video)}
+  end
+
   def render("video.json", %{video: video}) do
     %{id: video.id, title: video.title, description: video.description, url: video.url}
   end
