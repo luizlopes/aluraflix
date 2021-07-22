@@ -17,5 +17,6 @@ defmodule Aluraflix.Video do
     |> cast(params, @required_params)
     |> validate_required(@required_params)
     |> validate_length(:title, min: 3, max: 50)
+    |> validate_length(:description, min: 3, max: 50)
   end
 end
