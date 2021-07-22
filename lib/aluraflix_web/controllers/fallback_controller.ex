@@ -9,4 +9,11 @@ defmodule AluraflixWeb.FallbackController do
     |> put_view(ErrorView)
     |> render("error.json", message: "resource not found")
   end
+
+  def call(conn, {:error, %Ecto.Changeset{} = result}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(ErrorView)
+    |> render("error.json", %{result: result})
+  end
 end

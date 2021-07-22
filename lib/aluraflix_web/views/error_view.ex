@@ -15,4 +15,16 @@ defmodule AluraflixWeb.ErrorView do
   end
 
   def render("error.json", %{message: message}), do: %{message: message}
+
+  def render("error.json", %{result: %Ecto.Changeset{} = result}) do
+    translate_errors(result)
+  end
+
+  defp translate_errors(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+  end
 end

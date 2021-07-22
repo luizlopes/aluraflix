@@ -22,43 +22,24 @@ defmodule Aluraflix.Videos.CreateTest do
     test "when there are invalid params, then return a error message" do
       params = %{title: ".", description: ".", url: "yt/video/1"}
 
-      result = Create.call(params)
+      {:error, result} = Create.call(params)
 
-      assert {:error,
-              %{
-                errors: [
-                  {
-                    :description,
-                    {
-                      "should be at least %{count} character(s)",
-                      [
-                        count: 3,
-                        validation: :length,
-                        kind: :min,
-                        type: :string
-                      ]
-                    }
-                  },
-                  {:title,
-                   {"should be at least %{count} character(s)",
-                    [count: 3, validation: :length, kind: :min, type: :string]}}
-                ]
-              }} == result
+      assert %{
+               description: ["should be at least 3 character(s)"],
+               title: ["should be at least 3 character(s)"]
+             } = errors_on(result)
     end
 
     test "when params is empty, then return a error message" do
       params = %{}
 
-      result = Create.call(params)
+      {:error, result} = Create.call(params)
 
-      assert {:error,
-              %{
-                errors: [
-                  {:title, {"can't be blank", [validation: :required]}},
-                  {:description, {"can't be blank", [validation: :required]}},
-                  {:url, {"can't be blank", [validation: :required]}}
-                ]
-              }} == result
+      assert %{
+               description: ["can't be blank"],
+               title: ["can't be blank"],
+               url: ["can't be blank"]
+             } = errors_on(result)
     end
   end
 end

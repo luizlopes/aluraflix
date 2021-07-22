@@ -77,4 +77,53 @@ defmodule AluraflixWeb.VideosControllerTest do
              } = response
     end
   end
+
+  describe "create/2" do
+    test "when all params are valid, then return the created video", %{conn: conn} do
+      params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
+
+      response =
+        conn
+        |> post(Routes.videos_path(conn, :create, params))
+        |> json_response(201)
+
+      assert %{
+               "data" => %{
+                 "id" => _id,
+                 "title" => "video #01",
+                 "description" => "video 1...",
+                 "url" => "http://yt/video/1"
+               }
+             } = response
+    end
+
+    test "when params is empty, then return an error", %{conn: conn} do
+      params = %{}
+
+      response =
+        conn
+        |> post(Routes.videos_path(conn, :create, params))
+        |> json_response(400)
+
+      assert %{
+               "description" => ["can't be blank"],
+               "title" => ["can't be blank"],
+               "url" => ["can't be blank"]
+             } = response
+    end
+
+    test "when params are invalid, then return an error", %{conn: conn} do
+      params = %{title: ".", description: ".", url: "."}
+
+      response =
+        conn
+        |> post(Routes.videos_path(conn, :create, params))
+        |> json_response(400)
+
+      assert %{
+               "description" => ["should be at least 3 character(s)"],
+               "title" => ["should be at least 3 character(s)"]
+             } = response
+    end
+  end
 end

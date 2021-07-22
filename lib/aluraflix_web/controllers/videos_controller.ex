@@ -20,4 +20,12 @@ defmodule AluraflixWeb.VideosController do
       |> render("show.json", video: video)
     end
   end
+
+  def create(conn, params) do
+    with {:ok, %Video{} = video} <- Aluraflix.create_video(params) do
+      conn
+      |> put_status(201)
+      |> render("show.json", video: video)
+    end
+  end
 end

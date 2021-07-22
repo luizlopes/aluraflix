@@ -9,5 +9,5 @@ defmodule Aluraflix.Videos.Create do
   end
 
   defp handle_insert({:ok, _} = result), do: result
-  defp handle_insert({:error, %Ecto.Changeset{errors: errors}}), do: {:error, %{errors: errors}}
+  defp handle_insert({:error, channgeset}), do: {:error, channgeset}
 end

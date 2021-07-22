@@ -9,4 +9,5 @@ defmodule Aluraflix do
 
   defdelegate all_videos(), to: Aluraflix.Videos.All, as: :call
   defdelegate get_video(params), to: Aluraflix.Videos.Get, as: :call
+  defdelegate create_video(params), to: Aluraflix.Videos.Create, as: :call
 end
