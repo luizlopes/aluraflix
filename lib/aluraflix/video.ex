@@ -13,7 +13,16 @@ defmodule Aluraflix.Video do
   end
 
   def changeset(params) do
-    %__MODULE__{}
+    changeset(%__MODULE__{}, params)
+  end
+
+  def changeset(%__MODULE__{} = video, params) do
+    video
+    |> cast_and_validate(params)
+  end
+
+  defp cast_and_validate(video, params) do
+    video
     |> cast(params, @required_params)
     |> validate_required(@required_params)
     |> validate_length(:title, min: 3, max: 50)
