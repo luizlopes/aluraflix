@@ -126,4 +126,69 @@ defmodule AluraflixWeb.VideosControllerTest do
              } = response
     end
   end
+
+  describe "update/2" do
+    test "when all params are valid, then return the updated video", %{conn: conn} do
+      create_params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
+
+      {:ok, %Video{id: id}} = Aluraflix.Videos.Create.call(create_params)
+
+      update_params = %{
+        title: "updated video",
+        description: "updated video 1...",
+        url: "http://yt/updatedvideo/1"
+      }
+
+      response =
+        conn
+        |> patch(Routes.videos_path(conn, :update, id, update_params))
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "id" => ^id,
+                 "title" => "updated video",
+                 "description" => "updated video 1...",
+                 "url" => "http://yt/updatedvideo/1"
+               }
+             } = response
+    end
+
+    test "when there are invalid params, then return an error", %{conn: conn} do
+      create_params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
+
+      {:ok, %Video{id: id}} = Aluraflix.Videos.Create.call(create_params)
+
+      update_params = %{title: "x", description: "x", url: "x"}
+
+      response =
+        conn
+        |> patch(Routes.videos_path(conn, :update, id, update_params))
+        |> json_response(400)
+
+      assert %{
+               "description" => ["should be at least 3 character(s)"],
+               "title" => ["should be at least 3 character(s)"]
+             } = response
+    end
+
+    test "when the video id doens't exists, then return an not found video error", %{conn: conn} do
+      invalid_id = 98765
+
+      update_params = %{
+        title: "updated video",
+        description: "updated video 1...",
+        url: "http://yt/updatedvideo/1"
+      }
+
+      response =
+        conn
+        |> patch(Routes.videos_path(conn, :update, invalid_id, update_params))
+        |> json_response(404)
+
+      assert %{
+               "message" => "resource not found"
+             } = response
+    end
+  end
 end

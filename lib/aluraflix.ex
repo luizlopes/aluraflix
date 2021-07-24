@@ -7,7 +7,10 @@ defmodule Aluraflix do
   if it comes from the database, an external API or others.
   """
 
-  defdelegate all_videos(), to: Aluraflix.Videos.All, as: :call
-  defdelegate get_video(params), to: Aluraflix.Videos.Get, as: :call
-  defdelegate create_video(params), to: Aluraflix.Videos.Create, as: :call
+  alias Aluraflix.Videos
+
+  defdelegate all_videos(), to: Videos.All, as: :call
+  defdelegate get_video(params), to: Videos.Get, as: :call
+  defdelegate create_video(params), to: Videos.Create, as: :call
+  defdelegate update_video(video, params), to: Videos.Update, as: :call
 end

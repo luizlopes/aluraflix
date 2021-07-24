@@ -28,4 +28,13 @@ defmodule AluraflixWeb.VideosController do
       |> render("show.json", video: video)
     end
   end
+
+  def update(conn, params) do
+    with {:ok, %Video{} = video} <- Aluraflix.get_video(params),
+         {:ok, %Video{} = updated_video} <- Aluraflix.update_video(video, params) do
+      conn
+      |> put_status(200)
+      |> render("show.json", video: updated_video)
+    end
+  end
 end
