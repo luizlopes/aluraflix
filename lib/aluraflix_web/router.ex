@@ -9,7 +9,7 @@ defmodule AluraflixWeb.Router do
     pipe_through :api
 
     resources "/videos", VideosController, only: [:index, :show, :create, :update]
-    resources "/categories", CategoriesController, only: [:index]
+    resources "/categories", CategoriesController, only: [:index, :show]
   end
 
   # Enables LiveDashboard only for development
