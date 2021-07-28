@@ -2,6 +2,7 @@ defmodule AluraflixWeb.CategoriesControllerTest do
   use AluraflixWeb.ConnCase, async: true
 
   alias Aluraflix.{Repo, Category}
+  alias Aluraflix.Categories.Create
 
   describe "index/2" do
     test "when there aren't categories registereds, then return an empty list", %{conn: conn} do
@@ -119,6 +120,70 @@ defmodule AluraflixWeb.CategoriesControllerTest do
       assert %{
                "color" => ["should be at least 3 character(s)"],
                "title" => ["should be at least 3 character(s)"]
+             } = response
+    end
+  end
+
+  describe "update/2" do
+    test "when all params are valid, then return the updated category", %{conn: conn} do
+      create_params = %{title: "category #01", color: "Yellow"}
+
+      {:ok, %Category{id: id}} = Create.call(create_params)
+
+      update_params = %{
+        title: "updated Category",
+        color: "Brown"
+      }
+
+      response =
+        conn
+        |> patch(Routes.categories_path(conn, :update, id, update_params))
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "id" => ^id,
+                 "title" => "updated Category",
+                 "color" => "Brown"
+               }
+             } = response
+    end
+
+    test "when there are invalid params, then return an error", %{conn: conn} do
+      create_params = %{title: "Category #01", color: "Yellow"}
+
+      {:ok, %Category{id: id}} = Create.call(create_params)
+
+      update_params = %{title: "x", color: "x"}
+
+      response =
+        conn
+        |> patch(Routes.categories_path(conn, :update, id, update_params))
+        |> json_response(400)
+
+      assert %{
+               "color" => ["should be at least 3 character(s)"],
+               "title" => ["should be at least 3 character(s)"]
+             } = response
+    end
+
+    test "when the category id doens't exists, then return a not found category error", %{
+      conn: conn
+    } do
+      invalid_id = 98765
+
+      update_params = %{
+        title: "updated Category",
+        color: "Dark grey"
+      }
+
+      response =
+        conn
+        |> patch(Routes.categories_path(conn, :update, invalid_id, update_params))
+        |> json_response(404)
+
+      assert %{
+               "message" => "resource not found"
              } = response
     end
   end

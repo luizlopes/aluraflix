@@ -2,7 +2,7 @@ defmodule AluraflixWeb.CategoriesController do
   use AluraflixWeb, :controller
 
   alias Aluraflix.Category
-  alias Aluraflix.Categories.{All, Get, Create}
+  alias Aluraflix.Categories.{All, Get, Create, Update}
 
   action_fallback AluraflixWeb.FallbackController
 
@@ -27,6 +27,15 @@ defmodule AluraflixWeb.CategoriesController do
       conn
       |> put_status(201)
       |> render("show.json", category: category)
+    end
+  end
+
+  def update(conn, params) do
+    with {:ok, %Category{} = category} <- Get.call(params),
+         {:ok, %Category{} = updated_category} <- Update.call(category, params) do
+      conn
+      |> put_status(200)
+      |> render("show.json", category: updated_category)
     end
   end
 end
