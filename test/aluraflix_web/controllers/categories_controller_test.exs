@@ -75,4 +75,51 @@ defmodule AluraflixWeb.CategoriesControllerTest do
              } = response
     end
   end
+
+  describe "create/2" do
+    test "when all params are valid, then return the created category", %{conn: conn} do
+      params = %{title: "category #01", color: "black"}
+
+      response =
+        conn
+        |> post(Routes.categories_path(conn, :create, params))
+        |> json_response(201)
+
+      assert %{
+               "data" => %{
+                 "id" => _id,
+                 "title" => "category #01",
+                 "color" => "black"
+               }
+             } = response
+    end
+
+    test "when params is empty, then return an error", %{conn: conn} do
+      params = %{}
+
+      response =
+        conn
+        |> post(Routes.categories_path(conn, :create, params))
+        |> json_response(400)
+
+      assert %{
+               "title" => ["can't be blank"],
+               "color" => ["can't be blank"]
+             } = response
+    end
+
+    test "when params are invalid, then return an error", %{conn: conn} do
+      params = %{title: ".", color: "."}
+
+      response =
+        conn
+        |> post(Routes.categories_path(conn, :create, params))
+        |> json_response(400)
+
+      assert %{
+               "color" => ["should be at least 3 character(s)"],
+               "title" => ["should be at least 3 character(s)"]
+             } = response
+    end
+  end
 end
