@@ -8,6 +8,6 @@ defmodule Aluraflix.Videos.Create do
     |> handle_insert()
   end
 
-  defp handle_insert({:ok, _} = result), do: result
+  defp handle_insert({:ok, video} = result), do: {:ok, Repo.preload(video, [:categories])}
   defp handle_insert({:error, channgeset}), do: {:error, channgeset}
 end

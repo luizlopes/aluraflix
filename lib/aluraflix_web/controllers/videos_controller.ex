@@ -5,8 +5,8 @@ defmodule AluraflixWeb.VideosController do
 
   action_fallback AluraflixWeb.FallbackController
 
-  def index(conn, _params) do
-    with videos <- Aluraflix.all_videos() do
+  def index(conn, params) do
+    with videos <- Aluraflix.all_videos(params) do
       conn
       |> put_status(200)
       |> render("index.json", videos: videos)

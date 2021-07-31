@@ -27,7 +27,8 @@ defmodule Aluraflix.Videos.GetTest do
                 id: ^id,
                 title: "video #01",
                 description: "video 1...",
-                url: "http://yt/video/1"
+                url: "http://yt/video/1",
+                categories: []
               }} = result
     end
   end
