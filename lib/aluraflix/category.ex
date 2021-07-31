@@ -2,11 +2,14 @@ defmodule Aluraflix.Category do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Aluraflix.{Video, VideoCategory}
+
   @required_params [:title, :color]
 
   schema "categories" do
     field :title, :string
     field :color, :string
+    many_to_many :videos, Video, join_through: VideoCategory
 
     timestamps()
   end
