@@ -6,11 +6,17 @@ defmodule Aluraflix.Videos.UpdateTest do
 
   describe "update/2" do
     test "Given an video, when all params are valid, then update a video record" do
+      Aluraflix.Categories.Create.call(%{title: "Free", color: "Green"})
+
       create_params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
 
       {:ok, %Video{id: id} = video} = Create.call(create_params)
 
-      update_params = %{title: "Updated Video", description: "This video record was updated", url: "http://updating.co"}
+      update_params = %{
+        title: "Updated Video",
+        description: "This video record was updated",
+        url: "http://updating.co"
+      }
 
       result = Update.call(video, update_params)
 
@@ -24,6 +30,8 @@ defmodule Aluraflix.Videos.UpdateTest do
     end
 
     test "Given an video, when there are invalid params, then return a error message" do
+      Aluraflix.Categories.Create.call(%{title: "Free", color: "Green"})
+
       create_params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
 
       {:ok, video} = Create.call(create_params)
@@ -33,9 +41,9 @@ defmodule Aluraflix.Videos.UpdateTest do
       {:error, result} = Update.call(video, update_params)
 
       assert %{
-                description: ["should be at least 3 character(s)"],
-                title: ["should be at least 3 character(s)"]
-              } = errors_on(result)
+               description: ["should be at least 3 character(s)"],
+               title: ["should be at least 3 character(s)"]
+             } = errors_on(result)
     end
   end
 end

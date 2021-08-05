@@ -1,7 +1,7 @@
 defmodule AluraflixWeb.VideosControllerTest do
   use AluraflixWeb.ConnCase, async: true
 
-  alias Aluraflix.{Repo, Video}
+  alias Aluraflix.{Repo, Video, Category}
 
   describe "index/2" do
     test "when there aren't videos records, then return empty list", %{conn: conn} do
@@ -79,8 +79,16 @@ defmodule AluraflixWeb.VideosControllerTest do
   end
 
   describe "create/2" do
-    test "when all params are valid, then return the created video", %{conn: conn} do
-      params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
+    test "when all params are valid without categories, then return the created video with one category",
+         %{conn: conn} do
+      Aluraflix.Categories.Create.call(%{title: "Free", color: "Green"})
+
+      params = %{
+        "categories" => nil,
+        "title" => "video #01",
+        "description" => "video 1...",
+        "url" => "http://yt/video/1"
+      }
 
       response =
         conn
@@ -92,7 +100,55 @@ defmodule AluraflixWeb.VideosControllerTest do
                  "id" => _id,
                  "title" => "video #01",
                  "description" => "video 1...",
-                 "url" => "http://yt/video/1"
+                 "url" => "http://yt/video/1",
+                 "categories" => [
+                   %{
+                     "title" => "Free",
+                     "color" => "Green"
+                   }
+                 ]
+               }
+             } = response
+    end
+
+    test "when all params are valid with two categories, then return the created video with the categories",
+         %{conn: conn} do
+      {:ok, %Category{id: free_category_id}} =
+        Aluraflix.Categories.Create.call(%{title: "Free", color: "Green"})
+
+      {:ok, %Category{id: comedy_category_id}} =
+        Aluraflix.Categories.Create.call(%{title: "Comedy", color: "Orange"})
+
+      params = %{
+        "categories" => [%{"id" => free_category_id}, %{"id" => comedy_category_id}],
+        "title" => "video #01",
+        "description" => "video 1...",
+        "url" => "http://yt/video/1"
+      }
+
+      response =
+        conn
+        |> post(Routes.videos_path(conn, :create, params))
+        |> json_response(201)
+
+      assert %{
+               "data" => %{
+                 "id" => _id,
+                 "title" => "video #01",
+                 "description" => "video 1...",
+                 "url" => "http://yt/video/1",
+                 "categories" => [
+                   %{
+                     "id" => ^free_category_id,
+                     "title" => "Free",
+                     "color" => "Green"
+                   },
+                   %{
+                     "id" => ^comedy_category_id,
+                     "title" => "Comedy",
+                     "color" => "Orange"
+                   }
+                 ]
                }
              } = response
     end
@@ -129,7 +185,14 @@ defmodule AluraflixWeb.VideosControllerTest do
 
   describe "update/2" do
     test "when all params are valid, then return the updated video", %{conn: conn} do
-      create_params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
+      Aluraflix.Categories.Create.call(%{title: "Free", color: "Green"})
+
+      create_params = %{
+        "title" => "video #01",
+        "description" => "video 1...",
+        "url" => "http://yt/video/1",
+        "categories" => nil
+      }
 
       {:ok, %Video{id: id}} = Aluraflix.Videos.Create.call(create_params)
 
@@ -155,7 +218,14 @@ defmodule AluraflixWeb.VideosControllerTest do
     end
 
     test "when there are invalid params, then return an error", %{conn: conn} do
-      create_params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
+      Aluraflix.Categories.Create.call(%{title: "Free", color: "Green"})
+
+      create_params = %{
+        "title" => "video #01",
+        "description" => "video 1...",
+        "url" => "http://yt/video/1",
+        "categories" => nil
+      }
 
       {:ok, %Video{id: id}} = Aluraflix.Videos.Create.call(create_params)
 

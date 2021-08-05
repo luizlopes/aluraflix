@@ -1,4 +1,4 @@
-defmodule Aluraflix.Videos.GetTest do
+defmodule Aluraflix.Videos.AllTest do
   use Aluraflix.DataCase, async: true
 
   alias Aluraflix.{Video, Category}
@@ -63,26 +63,28 @@ defmodule Aluraflix.Videos.GetTest do
     end
 
     defp data_setup() do
-      create_video_params_01 = %{
-        title: "video #01",
-        description: "video 1...",
-        url: "http://yt/video/1"
-      }
-
-      create_video_params_02 = %{
-        title: "video #02",
-        description: "video 2...",
-        url: "http://yt/video/2"
-      }
-
-      {:ok, %Video{id: video_01_id}} = CreateVideo.call(create_video_params_01)
-      {:ok, %Video{id: video_02_id}} = CreateVideo.call(create_video_params_02)
-
       create_category_params_01 = %{title: "category #01", color: "blank"}
       create_category_params_02 = %{title: "category #02", color: "black"}
 
       {:ok, %Category{id: category_01_id}} = CreateCategory.call(create_category_params_01)
       {:ok, %Category{id: category_02_id}} = CreateCategory.call(create_category_params_02)
+
+      create_video_params_01 = %{
+        "title" => "video #01",
+        "description" => "video 1...",
+        "url" => "http://yt/video/1",
+        "categories" => []
+      }
+
+      create_video_params_02 = %{
+        "title" => "video #02",
+        "description" => "video 2...",
+        "url" => "http://yt/video/2",
+        "categories" => []
+      }
+
+      {:ok, %Video{id: video_01_id}} = CreateVideo.call(create_video_params_01)
+      {:ok, %Video{id: video_02_id}} = CreateVideo.call(create_video_params_02)
 
       video_category_params_01 = %{video_id: video_01_id, category_id: category_01_id}
       video_category_params_02 = %{video_id: video_01_id, category_id: category_02_id}

@@ -1,12 +1,20 @@
-defmodule Aluraflix.Videos.CreateTest do
-  use Aluraflix.DataCase, async: true
+defmodule Aluraflix.Videos.CreateTest, async: true do
+  use Aluraflix.DataCase
 
-  alias Aluraflix.Video
+  alias Aluraflix.{Video, Category}
   alias Aluraflix.Videos.Create
 
   describe "create/1" do
     test "when all params are valid, then create a video record" do
-      params = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
+      {:ok, %Category{id: category_id}} =
+        Aluraflix.Categories.Create.call(%{"title" => "Free", "color" => "Green"})
+
+      params = %{
+        "title" => "video #01",
+        "description" => "video 1...",
+        "url" => "http://yt/video/1",
+        "categories" => [%{"id" => category_id}]
+      }
 
       result = Create.call(params)
 
@@ -15,7 +23,14 @@ defmodule Aluraflix.Videos.CreateTest do
                 id: _id,
                 title: "video #01",
                 description: "video 1...",
-                url: "http://yt/video/1"
+                url: "http://yt/video/1",
+                categories: [
+                  %Category{
+                    id: ^category_id,
+                    title: "Free",
+                    color: "Green"
+                  }
+                ]
               }} = result
     end
 
