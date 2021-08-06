@@ -42,6 +42,52 @@ defmodule Aluraflix.Videos.AllTest do
              ] = result
     end
 
+    test "when params has a search query with exactly title, then return matched videos" do
+      data_setup()
+
+      params = %{"search" => "video #02"}
+
+      result = All.call(params)
+
+      assert [
+               %Video{
+                 title: "video #02",
+                 description: "video 2...",
+                 categories: [
+                   %Category{
+                     title: "category #02",
+                     color: "black"
+                   }
+                 ]
+               }
+             ] = result
+    end
+
+    test "when params has a search query with title, then return matched videos" do
+      data_setup()
+
+      params = %{"search" => "video"}
+
+      result = All.call(params)
+
+      assert [
+               %Video{
+                 title: "video #01",
+                 description: "video 1..."
+               },
+               %Video{
+                 title: "video #02",
+                 description: "video 2...",
+                 categories: [
+                   %Category{
+                     title: "category #02",
+                     color: "black"
+                   }
+                 ]
+               }
+             ] = result
+    end
+
     test "when params has a valid category id, then return videos for that category" do
       %{category_01: category_01} = data_setup()
 

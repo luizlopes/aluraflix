@@ -38,6 +38,43 @@ defmodule AluraflixWeb.VideosControllerTest do
                ]
              } = response
     end
+
+    test "when there are videos records and a search param is passed through, then return all matched videos",
+         %{conn: conn} do
+      params_01 = %{title: "video #01", description: "video 1...", url: "http://yt/video/1"}
+
+      params_02 = %{
+        title: "phoenix framework",
+        description: "phoenix is great",
+        url: "http://yt/video/3"
+      }
+
+      params_01
+      |> Video.changeset()
+      |> Repo.insert()
+
+      params_02
+      |> Video.changeset()
+      |> Repo.insert()
+
+      search_param = %{"search" => "phoenix"}
+
+      response =
+        conn
+        |> get(Routes.videos_path(conn, :index, search_param))
+        |> json_response(200)
+
+      assert %{
+               "data" => [
+                 %{
+                   "id" => _id,
+                   "description" => "phoenix is great",
+                   "title" => "phoenix framework",
+                   "url" => "http://yt/video/3"
+                 }
+               ]
+             } = response
+    end
   end
 
   describe "show/2" do
