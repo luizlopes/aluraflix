@@ -25,32 +25,40 @@ defmodule Aluraflix.Videos.AllTest do
 
       result = All.call(params)
 
-      assert [
-               %Video{
-                 title: "video #01",
-                 description: _,
-                 categories: [
-                   %Category{
-                     title: "category #01",
-                     color: "blank"
-                   },
-                   %Category{
-                     title: "category #02",
-                     color: "black"
-                   }
-                 ]
+      assert %{
+               "pagination" => %{
+                 "page" => 1,
+                 "page_count" => 1,
+                 "per_page" => 5,
+                 "total_count" => 2
                },
-               %Video{
-                 title: "video #02",
-                 description: _,
-                 categories: [
-                   %Category{
-                     title: "category #02",
-                     color: "black"
-                   }
-                 ]
-               }
-             ] = result
+               "result" => [
+                 %Video{
+                   title: "video #01",
+                   description: _,
+                   categories: [
+                     %Category{
+                       title: "category #01",
+                       color: "blank"
+                     },
+                     %Category{
+                       title: "category #02",
+                       color: "black"
+                     }
+                   ]
+                 },
+                 %Video{
+                   title: "video #02",
+                   description: _,
+                   categories: [
+                     %Category{
+                       title: "category #02",
+                       color: "black"
+                     }
+                   ]
+                 }
+               ]
+             } = result
     end
 
     test "when params has a search query with exactly title, then return matched videos" do
@@ -58,18 +66,26 @@ defmodule Aluraflix.Videos.AllTest do
 
       result = All.call(params)
 
-      assert [
-               %Video{
-                 title: "video #02",
-                 description: _,
-                 categories: [
-                   %Category{
-                     title: "category #02",
-                     color: "black"
-                   }
-                 ]
-               }
-             ] = result
+      assert %{
+               "pagination" => %{
+                 "page" => 1,
+                 "page_count" => 1,
+                 "per_page" => 5,
+                 "total_count" => 1
+               },
+               "result" => [
+                 %Video{
+                   title: "video #02",
+                   description: _,
+                   categories: [
+                     %Category{
+                       title: "category #02",
+                       color: "black"
+                     }
+                   ]
+                 }
+               ]
+             } = result
     end
 
     test "when params has a search query with title, then return matched videos" do
@@ -77,22 +93,30 @@ defmodule Aluraflix.Videos.AllTest do
 
       result = All.call(params)
 
-      assert [
-               %Video{
-                 title: "video #01",
-                 description: _
+      assert %{
+               "pagination" => %{
+                 "page" => 1,
+                 "page_count" => 1,
+                 "per_page" => 5,
+                 "total_count" => 2
                },
-               %Video{
-                 title: "video #02",
-                 description: _,
-                 categories: [
-                   %Category{
-                     title: "category #02",
-                     color: "black"
-                   }
-                 ]
-               }
-             ] = result
+               "result" => [
+                 %Video{
+                   title: "video #01",
+                   description: _
+                 },
+                 %Video{
+                   title: "video #02",
+                   description: _,
+                   categories: [
+                     %Category{
+                       title: "category #02",
+                       color: "black"
+                     }
+                   ]
+                 }
+               ]
+             } = result
     end
 
     test "when params has a valid category id, then return videos for that category", %{
@@ -100,7 +124,7 @@ defmodule Aluraflix.Videos.AllTest do
     } do
       params = %{"category_id" => category_01}
 
-      result = All.call(params)
+      %{"result" => result} = All.call(params)
 
       assert length(result) == 2
     end
@@ -110,7 +134,15 @@ defmodule Aluraflix.Videos.AllTest do
 
       result = All.call(params)
 
-      assert result == []
+      assert %{
+               "pagination" => %{
+                 "page" => 1,
+                 "page_count" => 0,
+                 "per_page" => 5,
+                 "total_count" => 0
+               },
+               "result" => []
+             } = result
     end
   end
 end

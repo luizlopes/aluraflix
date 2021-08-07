@@ -1,5 +1,6 @@
 defmodule AluraflixWeb.VideosControllerTest do
   use AluraflixWeb.ConnCase, async: true
+  import Aluraflix.Factory
 
   alias Aluraflix.{Repo, Video, Category}
 
@@ -11,6 +12,12 @@ defmodule AluraflixWeb.VideosControllerTest do
         |> json_response(200)
 
       assert %{
+               "_metadata" => %{
+                 "page" => 1,
+                 "page_count" => 0,
+                 "per_page" => 5,
+                 "total_count" => 0
+               },
                "data" => []
              } = response
     end
@@ -27,7 +34,15 @@ defmodule AluraflixWeb.VideosControllerTest do
         |> get(Routes.videos_path(conn, :index, %{}))
         |> json_response(200)
 
+      IO.inspect(response)
+
       assert %{
+               "_metadata" => %{
+                 "page" => 1,
+                 "page_count" => 1,
+                 "per_page" => 5,
+                 "total_count" => 1
+               },
                "data" => [
                  %{
                    "id" => _id,
@@ -65,6 +80,12 @@ defmodule AluraflixWeb.VideosControllerTest do
         |> json_response(200)
 
       assert %{
+               "_metadata" => %{
+                 "page" => 1,
+                 "page_count" => 1,
+                 "per_page" => 5,
+                 "total_count" => 1
+               },
                "data" => [
                  %{
                    "id" => _id,
@@ -74,6 +95,28 @@ defmodule AluraflixWeb.VideosControllerTest do
                  }
                ]
              } = response
+    end
+
+    test "when there are videos records and pagination parameters are passed through, then return only videos related on page",
+         %{conn: conn} do
+      Enum.map(1..25, fn number -> insert!(:video, %{title: "video #{number}"}) end)
+
+      response =
+        conn
+        |> get(Routes.videos_path(conn, :index, %{"page" => 2, "per_page" => 10}))
+        |> json_response(200)
+
+      assert %{
+               "_metadata" => %{
+                 "page" => 2,
+                 "page_count" => 3,
+                 "per_page" => 10,
+                 "total_count" => 25
+               },
+               "data" => data
+             } = response
+
+      assert 10 = length(data)
     end
   end
 

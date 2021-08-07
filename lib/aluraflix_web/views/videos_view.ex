@@ -1,8 +1,15 @@
 defmodule AluraflixWeb.VideosView do
   use AluraflixWeb, :view
 
-  def render("index.json", %{videos: videos}) do
-    %{data: render_many(videos, AluraflixWeb.VideosView, "video.json", as: :video)}
+  def render("index.json", %{videos: paginated_videos}) do
+    %{
+      _metadata:
+        render(AluraflixWeb.PaginationView, "page.json",
+          pagination: paginated_videos["pagination"]
+        ),
+      data:
+        render_many(paginated_videos["result"], AluraflixWeb.VideosView, "video.json", as: :video)
+    }
   end
 
   def render("show.json", %{video: video}) do

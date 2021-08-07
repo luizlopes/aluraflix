@@ -1,32 +1,40 @@
 defmodule Aluraflix.Videos.All do
   import Ecto.Query
 
-  alias Aluraflix.{Repo, Video}
+  alias Aluraflix.{Video, Pagination}
 
   def call(params) do
-    do_call(params)
+    opts = [
+      page: Map.get(params, "page"),
+      per_page: Map.get(params, "per_page"),
+      preload: [:categories]
+    ]
+
+    get_query(params) |> paginate(opts)
   end
 
-  defp do_call(%{"categories_id" => category_id}), do: by_category(category_id)
-  defp do_call(%{"search" => searched_string}), do: by_title(searched_string)
-  defp do_call(%{}), do: Repo.all(Video) |> Repo.preload([:categories])
+  defp get_query(%{"search" => searched_string}) when is_binary(searched_string),
+    do: by_title(searched_string)
+
+  defp get_query(%{"categories_id" => category_id}) when is_binary(category_id),
+    do: by_category(category_id)
+
+  defp get_query(_), do: Video
 
   defp by_category(category_id) do
-    query =
-      from v in Video,
-        join: c in assoc(v, :categories),
-        where: c.id == ^category_id
-
-    Repo.all(query) |> Repo.preload([:categories])
+    from v in Video,
+      join: c in assoc(v, :categories),
+      where: c.id == ^category_id
   end
 
   defp by_title(searched_string) do
     like = "#{searched_string}%"
 
-    query =
-      from v in Video,
-        where: ilike(v.title, ^like)
+    from v in Video,
+      where: ilike(v.title, ^like)
+  end
 
-    Repo.all(query) |> Repo.preload([:categories])
+  defp paginate(query, opts) do
+    query |> Pagination.paginate(opts)
   end
 end
