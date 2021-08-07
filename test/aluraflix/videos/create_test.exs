@@ -1,5 +1,5 @@
-defmodule Aluraflix.Videos.CreateTest, async: true do
-  use Aluraflix.DataCase
+defmodule Aluraflix.Videos.CreateTest do
+  use Aluraflix.DataCase, async: true
 
   alias Aluraflix.{Video, Category}
   alias Aluraflix.Videos.Create

@@ -8,6 +8,8 @@ defmodule Aluraflix.Videos.All do
   end
 
   defp do_call(%{"categories_id" => category_id}), do: by_category(category_id)
+  defp do_call(%{"search" => searched_string}), do: by_title(searched_string)
+  defp do_call(%{}), do: Repo.all(Video) |> Repo.preload([:categories])
 
   defp by_category(category_id) do
     query =
@@ -18,8 +20,6 @@ defmodule Aluraflix.Videos.All do
     Repo.all(query) |> Repo.preload([:categories])
   end
 
-  defp do_call(%{"search" => searched_string}), do: by_title(searched_string)
-
   defp by_title(searched_string) do
     like = "#{searched_string}%"
 
@@ -28,9 +28,5 @@ defmodule Aluraflix.Videos.All do
         where: ilike(v.title, ^like)
 
     Repo.all(query) |> Repo.preload([:categories])
-  end
-
-  defp do_call(%{}) do
-    Repo.all(Video) |> Repo.preload([:categories])
   end
 end

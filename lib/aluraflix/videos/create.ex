@@ -39,7 +39,7 @@ defmodule Aluraflix.Videos.Create do
   end
 
   defp prepare_video_category_params(_params, video_id) do
-    [%{video_id: video_id, category_id: default_category_id}]
+    [%{video_id: video_id, category_id: default_category_id()}]
   end
 
   defp default_category_id do
