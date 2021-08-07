@@ -1,15 +1,26 @@
 defmodule Aluraflix.Videos.AllTest do
   use Aluraflix.DataCase, async: true
+  import Aluraflix.Factory
 
   alias Aluraflix.{Video, Category}
   alias Aluraflix.Videos.All
-  alias Aluraflix.Videos.Create, as: CreateVideo
-  alias Aluraflix.Categories.Create, as: CreateCategory
+
+  setup do
+    category_01 = insert!(:category, %{title: "category #01", color: "blank"})
+    category_02 = insert!(:category, %{title: "category #02", color: "black"})
+
+    video_01 = insert!(:video)
+    video_02 = insert!(:video, %{title: "video #02"})
+
+    insert!(:video_category, %{video_id: video_01.id, category_id: category_01.id})
+    insert!(:video_category, %{video_id: video_01.id, category_id: category_02.id})
+    insert!(:video_category, %{video_id: video_02.id, category_id: category_02.id})
+
+    {:ok, %{category_01: category_01.id, category_02: category_02.id}}
+  end
 
   describe "call/1" do
     test "when params are empty, then return all videos" do
-      data_setup()
-
       params = %{}
 
       result = All.call(params)
@@ -17,7 +28,7 @@ defmodule Aluraflix.Videos.AllTest do
       assert [
                %Video{
                  title: "video #01",
-                 description: "video 1...",
+                 description: _,
                  categories: [
                    %Category{
                      title: "category #01",
@@ -31,7 +42,7 @@ defmodule Aluraflix.Videos.AllTest do
                },
                %Video{
                  title: "video #02",
-                 description: "video 2...",
+                 description: _,
                  categories: [
                    %Category{
                      title: "category #02",
@@ -43,8 +54,6 @@ defmodule Aluraflix.Videos.AllTest do
     end
 
     test "when params has a search query with exactly title, then return matched videos" do
-      data_setup()
-
       params = %{"search" => "video #02"}
 
       result = All.call(params)
@@ -52,7 +61,7 @@ defmodule Aluraflix.Videos.AllTest do
       assert [
                %Video{
                  title: "video #02",
-                 description: "video 2...",
+                 description: _,
                  categories: [
                    %Category{
                      title: "category #02",
@@ -64,8 +73,6 @@ defmodule Aluraflix.Videos.AllTest do
     end
 
     test "when params has a search query with title, then return matched videos" do
-      data_setup()
-
       params = %{"search" => "video"}
 
       result = All.call(params)
@@ -73,11 +80,11 @@ defmodule Aluraflix.Videos.AllTest do
       assert [
                %Video{
                  title: "video #01",
-                 description: "video 1..."
+                 description: _
                },
                %Video{
                  title: "video #02",
-                 description: "video 2...",
+                 description: _,
                  categories: [
                    %Category{
                      title: "category #02",
@@ -88,9 +95,9 @@ defmodule Aluraflix.Videos.AllTest do
              ] = result
     end
 
-    test "when params has a valid category id, then return videos for that category" do
-      %{category_01: category_01} = data_setup()
-
+    test "when params has a valid category id, then return videos for that category", %{
+      category_01: category_01
+    } do
       params = %{"category_id" => category_01}
 
       result = All.call(params)
@@ -99,48 +106,11 @@ defmodule Aluraflix.Videos.AllTest do
     end
 
     test "when params has an invalid category id, then return error" do
-      data_setup()
-
       params = %{"categories_id" => 10909}
 
       result = All.call(params)
 
       assert result == []
-    end
-
-    defp data_setup() do
-      create_category_params_01 = %{title: "category #01", color: "blank"}
-      create_category_params_02 = %{title: "category #02", color: "black"}
-
-      {:ok, %Category{id: category_01_id}} = CreateCategory.call(create_category_params_01)
-      {:ok, %Category{id: category_02_id}} = CreateCategory.call(create_category_params_02)
-
-      create_video_params_01 = %{
-        "title" => "video #01",
-        "description" => "video 1...",
-        "url" => "http://yt/video/1",
-        "categories" => []
-      }
-
-      create_video_params_02 = %{
-        "title" => "video #02",
-        "description" => "video 2...",
-        "url" => "http://yt/video/2",
-        "categories" => []
-      }
-
-      {:ok, %Video{id: video_01_id}} = CreateVideo.call(create_video_params_01)
-      {:ok, %Video{id: video_02_id}} = CreateVideo.call(create_video_params_02)
-
-      video_category_params_01 = %{video_id: video_01_id, category_id: category_01_id}
-      video_category_params_02 = %{video_id: video_01_id, category_id: category_02_id}
-      video_category_params_03 = %{video_id: video_02_id, category_id: category_02_id}
-
-      video_category_params_01 |> Aluraflix.VideoCategory.changeset() |> Aluraflix.Repo.insert()
-      video_category_params_02 |> Aluraflix.VideoCategory.changeset() |> Aluraflix.Repo.insert()
-      video_category_params_03 |> Aluraflix.VideoCategory.changeset() |> Aluraflix.Repo.insert()
-
-      %{category_01: category_01_id, category_02: category_02_id}
     end
   end
 end
