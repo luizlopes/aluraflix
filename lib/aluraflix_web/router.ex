@@ -12,6 +12,7 @@ defmodule AluraflixWeb.Router do
     resources "/categories", CategoriesController, only: [:index, :show, :create, :update] do
       resources "/videos", VideosController, only: [:index]
     end
+    post "/users/login", UsersController, :login
   end
 
   # Enables LiveDashboard only for development
