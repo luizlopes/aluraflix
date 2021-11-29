@@ -5,6 +5,8 @@ defmodule AluraflixWeb.VideosController do
 
   action_fallback AluraflixWeb.FallbackController
 
+  plug Plugs.Authenticate
+
   def index(conn, params) do
     with videos <- Aluraflix.all_videos(params) do
       conn
